@@ -8,3 +8,11 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+class Comment(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    description = models.TextField()
+
+    def __str__(self):
+        return f"Comment for {self.product.name}"
+
