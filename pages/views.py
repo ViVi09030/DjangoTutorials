@@ -7,38 +7,46 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import Product
 
+
 class HomePageView(TemplateView):
-    template_name = 'pages/home.html'
+    template_name = "pages/home.html"
+
 
 class AboutPageView(TemplateView):
-    template_name = 'pages/about.html'
+    template_name = "pages/about.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({
-            "title": "About us - Online Store",
-            "subtitle": "About us",
-            "description": "This is an about page ...",
-            "author": "Developed by: Viviana Arango",
-        })
+        context.update(
+            {
+                "title": "About us - Online Store",
+                "subtitle": "About us",
+                "description": "This is an about page ...",
+                "author": "Developed by: Viviana Arango",
+            }
+        )
         return context
+
 
 class ContactPageView(TemplateView):
-    template_name = 'pages/contact.html'
+    template_name = "pages/contact.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({
-            "title": "Contact - Online Store",
-            "subtitle": "Contact us",
-            "email": "contact@onlinestore.com",
-            "address": "Medellín, Colombia",
-            "phone": "+57 300 123 4567",
-        })
+        context.update(
+            {
+                "title": "Contact - Online Store",
+                "subtitle": "Contact us",
+                "email": "contact@onlinestore.com",
+                "address": "Medellín, Colombia",
+                "phone": "+57 300 123 4567",
+            }
+        )
         return context
 
+
 class ProductIndexView(View):
-    template_name = 'products/index.html'
+    template_name = "products/index.html"
 
     def get(self, request):
         viewData = {}
@@ -48,8 +56,9 @@ class ProductIndexView(View):
 
         return render(request, self.template_name, viewData)
 
+
 class ProductShowView(View):
-    template_name = 'products/show.html'
+    template_name = "products/show.html"
 
     def get(self, request, id):
         # Check if product id is valid
@@ -60,7 +69,7 @@ class ProductShowView(View):
             product = get_object_or_404(Product, pk=product_id)
         except (IndexError, ValueError):
             # If the product id is not valid, redirect to home page
-            return HttpResponseRedirect(reverse('home'))
+            return HttpResponseRedirect(reverse("home"))
 
         viewData = {}
         product = get_object_or_404(Product, pk=product_id)
@@ -70,23 +79,23 @@ class ProductShowView(View):
 
         return render(request, self.template_name, viewData)
 
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'price']
+        fields = ["name", "price"]
 
     def clean_price(self):
-        price = self.cleaned_data.get('price')
+        price = self.cleaned_data.get("price")
 
         if price is not None and price <= 0:
-            raise forms.ValidationError(
-                "The price must be greater than zero."
-            )
+            raise forms.ValidationError("The price must be greater than zero.")
 
         return price
 
+
 class ProductCreateView(View):
-    template_name = 'products/create.html'
+    template_name = "products/create.html"
 
     def get(self, request):
         form = ProductForm()
@@ -108,14 +117,14 @@ class ProductCreateView(View):
             viewData["form"] = form
             return render(request, self.template_name, viewData)
 
+
 class ProductListView(ListView):
     model = Product
-    template_name = 'product_list.html'
-    context_object_name = 'products'
+    template_name = "product_list.html"
+    context_object_name = "products"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Products - Online Store'
-        context['subtitle'] = 'List of products'
-        return context   
-
+        context["title"] = "Products - Online Store"
+        context["subtitle"] = "List of products"
+        return context
