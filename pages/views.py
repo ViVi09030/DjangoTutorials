@@ -7,6 +7,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import Product
 from .utils import ImageLocalStorage
+from django.core.files.storage import default_storage
 
 
 class HomePageView(TemplateView):
@@ -188,3 +189,19 @@ def ImageViewFactory(image_storage):
             return redirect('image_index')
 
     return ImageView
+
+class ImageViewNoDI(View):
+    template_name = 'imagesnotdi/index.html'
+
+    def get(self, request):
+        image_url = request.session.get('image_url', '')
+        return render(request, self.template_name, {'image_url': image_url})
+
+    def post(self, request):
+        profile_image = request.FILES.get('profile_image', None)
+        if profile_image:
+            file_name = default_storage.save('uploaded_images/' + profile_image.name, profile_image)
+            image_url = default_storage.url(file_name)
+            request.session['image_url'] = image_url
+
+        return redirect('image_notdi_index')
